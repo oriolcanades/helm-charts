@@ -1,0 +1,19 @@
+apiVersion: v1
+entries:
+  demo:
+  - apiVersion: v2
+    appVersion: v0.2.0
+    created: "2025-01-12T20:40:55.760604465Z"
+    description: A Helm chart for Kubernetes
+    digest: 6a8fced7894f0203d3a57f8528971ab3c7f4a97df918ea67171ee3bf62dfe1b0
+    maintainers:
+    - email: ocanades@gmail.com
+      name: Oriol Canadés
+    name: demo
+    sources:
+    - https://github.com/oiolcanades/demo
+    type: application
+    urls:
+    - https://github.com/oriolcanades/helm-charts/releases/download/demo-0.1.0/demo-0.1.0.tgz
+    version: 0.1.0
+generated: "2025-01-12T20:40:55.760610305Z"
