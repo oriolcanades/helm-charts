@@ -37,6 +37,9 @@ jobs:
             helm lint "charts/$CHART"
           done
 
+      - name: Setup kind cluster
+        uses: helm/kind-action@v1.8.0
+
       - name: Validate Helm Charts
         if: steps.changes.outputs.charts == 'true'
         run: |
