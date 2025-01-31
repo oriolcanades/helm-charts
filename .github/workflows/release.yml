@@ -9,6 +9,7 @@ jobs:
   release:
     permissions:
       contents: write
+    name: Package and Publish Helm Charts
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -16,12 +17,83 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Configure Git
-        run: |
-          git config user.name "$GITHUB_ACTOR"
-          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+      - name: Install Helm
+        uses: azure/setup-helm@v3
 
-      - name: Run chart-releaser
+      - name: Check for changes in Helm Charts
+        id: changes
+        uses: dorny/paths-filter@v2
+        with:
+          filters: |
+            charts:
+              - 'charts/**'
+
+      - name: Lint Helm Charts
+        if: steps.changes.outputs.charts == 'true'
+        run: |
+          CHARTS=$(find charts -mindepth 1 -maxdepth 1 -type d -printf "%f\n")
+          for CHART in $CHARTS; do
+            echo "🔍 Linting $CHART"
+            helm lint "charts/$CHART"
+          done
+
+      - name: Validate Helm Charts
+        if: steps.changes.outputs.charts == 'true'
+        run: |
+          CHARTS=$(find charts -mindepth 1 -maxdepth 1 -type d -printf "%f\n")
+          for CHART in $CHARTS; do
+            echo "🛠 Validating $CHART"
+            helm template "charts/$CHART" --validate --dry-run
+          done
+
+      - name: Build Helm Chart Dependencies
+        if: steps.changes.outputs.charts == 'true'
+        run: |
+          helm repo add in2workspace https://in2workspace.github.io/helm-charts
+          helm repo update
+          
+          CHARTS=$(find charts -mindepth 1 -maxdepth 1 -type d -printf "%f\n")
+          for CHART in $CHARTS; do
+            echo "📦 Building dependencies for $CHART"
+            helm dependency build "charts/$CHART"
+          done
+
+      - name: Generate Helm Chart Version
+        id: generate-version
+        uses: zwaldowski/semver-release-action@v3
+        with:
+          bump: patch
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure Git User
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+#      - name: Sign Helm Charts (Optional)
+#        if: steps.changes.outputs.charts == 'true'
+#        run: |
+#          CHARTS=$(find charts -mindepth 1 -maxdepth 1 -type d -printf "%f\n")
+#          for CHART in $CHARTS; do
+#            echo "🔏 Signing $CHART"
+#            helm package --sign --key my-key --keyring my-keyring.gpg "charts/$CHART"
+#          done
+
+      - name: Publish Helm Charts
+        if: steps.changes.outputs.charts == 'true'
         uses: helm/chart-releaser-action@v1.6.0
+        with:
+          pages_branch: gh-pages
+          skip_existing: true
+          packages_with_index: true
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+
+      - name: Create GitHub Release
+        if: steps.changes.outputs.charts == 'true'
+        uses: marvinpinto/action-automatic-releases@latest
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: ${{ steps.generate-version.outputs.version }}
+          prerelease: false
+          title: ${{ steps.generate-version.outputs.version }}
