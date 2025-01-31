@@ -92,11 +92,12 @@ jobs:
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
 
-      - name: Create GitHub Release
+      - name: Create GitHub Release with gh CLI
         if: steps.changes.outputs.charts == 'true'
-        uses: marvinpinto/action-automatic-releases@latest
-        with:
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: ${{ steps.generate-version.outputs.version }}
-          prerelease: false
-          title: ${{ steps.generate-version.outputs.version }}
+        run: |
+          gh release create ${{ steps.generate-version.outputs.version }} \
+            --title "${{ steps.generate-version.outputs.version }}" \
+            --notes "Release for Helm Charts" \
+            --repo ${{ github.repository }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
