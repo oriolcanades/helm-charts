@@ -16,4 +16,15 @@ entries:
     urls:
     - https://github.com/oriolcanades/helm-charts/releases/download/demo-0.1.0/demo-0.1.0.tgz
     version: 0.1.0
-generated: "2025-01-12T20:40:55.760610305Z"
+  test-2:
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2025-01-31T22:35:09.80648973Z"
+    description: A Helm chart for Kubernetes
+    digest: 3284978391d0645a39c9cf6ffc05356195bcfdbe715bf5c3a7de54f2cb8b962f
+    name: test-2
+    type: application
+    urls:
+    - test-2-0.1.0.tgz
+    version: 0.1.0
+generated: "2025-01-31T22:35:09.806499158Z"
