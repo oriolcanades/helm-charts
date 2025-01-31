@@ -16,6 +16,22 @@ entries:
     urls:
     - https://github.com/oriolcanades/helm-charts/releases/download/demo-0.1.0/demo-0.1.0.tgz
     version: 0.1.0
+  demo-backend:
+  - apiVersion: v2
+    appVersion: v0.3.0
+    created: "2025-01-31T23:02:12.150813277Z"
+    description: A Helm chart for Kubernetes
+    digest: d72a42f61be725e6caeb144d34044196959e5c6baa2a27b740f0650cac6d93a7
+    maintainers:
+    - email: ocanades@outlook.com
+      name: Oriol Canadés
+    name: demo-backend
+    sources:
+    - https://github.com/oriolcanades/demo-backend
+    type: application
+    urls:
+    - demo-backend-0.1.0.tgz
+    version: 0.1.0
   test-2:
   - apiVersion: v2
     appVersion: 1.16.0
@@ -27,4 +43,4 @@ entries:
     urls:
     - test-2-0.1.0.tgz
     version: 0.1.0
-generated: "2025-01-31T22:35:09.806499158Z"
+generated: "2025-01-31T23:02:12.150823075Z"
